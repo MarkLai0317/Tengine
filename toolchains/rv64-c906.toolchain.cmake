@@ -3,8 +3,11 @@ SET (CMAKE_SYSTEM_NAME Linux)
 SET (CMAKE_SYSTEM_PROCESSOR riscv64)
 
 # riscv64-unknown-linux-gnu DO NOT need to be installed, so make sure riscv64-unknown-linux-gnu-gcc and riscv64-unknown-linux-gnu-g++ can be found in $PATH:
-SET (CMAKE_C_COMPILER   "riscv64-unknown-linux-gnu-gcc")
-SET (CMAKE_CXX_COMPILER "riscv64-unknown-linux-gnu-g++")
+SET (CMAKE_C_COMPILER   "riscv64-poky-linux-gcc")
+SET (CMAKE_CXX_COMPILER "riscv64-poky-linux-g++")
+
+# Set sysroot for cross-compilation
+SET (CMAKE_SYSROOT /opt/poky/3.1.21/sysroots/riscv64-poky-linux)
 
 # set searching rules for cross-compiler
 SET (CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
@@ -12,7 +15,7 @@ SET (CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
 SET (CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
 
 # other needed options
-SET (TENGINE_TOOLCHAIN_ASM_FLAG -march=rv64gcvxthead -mabi=lp64d -mtune=c906 -mfp16 -lc)
+SET (TENGINE_TOOLCHAIN_ASM_FLAG )
 #SET (TENGINE_TOOLCHAIN_FLAG -march=rv64imafdcvxtheadc -mabi=lp64dv -mtune=c906 -mfp16)
 #SET (TENGINE_TOOLCHAIN_FLAG -march=rv64imafdcvxtheadc -mabi=lp64dv -mtune=c910 -mfp16)
 

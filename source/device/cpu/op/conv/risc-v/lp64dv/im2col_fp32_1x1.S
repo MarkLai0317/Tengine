@@ -36,83 +36,79 @@
 //    x2 col address
 //    x3 col_cnt
 //    x4 input channel
-//    x6 input start pointer		t6
+//    x6 input start pointer     t6
 //    x7 input pointer
 //    x9 channel cnt
 //    x11
-//    x12 = input_xy size * 2		// x12 -> t5
+//    x12 = input_xy size * 2      // x12 -> t5
 
-        .section .text,"ax"
-        .align 5
+.section .text, "ax"
+.align 5
 
-        .type   im2col_fp32_1x1 STT_FUNC
-        .global im2col_fp32_1x1
-        .hidden im2col_fp32_1x1
+.type im2col_fp32_1x1 STT_FUNC
+.global im2col_fp32_1x1
+.hidden im2col_fp32_1x1
 im2col_fp32_1x1:
-	addi    sp, sp, -56
-	sd      t0, 0(sp)
-	sd      t1, 8(sp)
-	sd      t2, 16(sp)
-	sd      t3, 24(sp)
-	sd      t4, 32(sp)
-	sd      t5, 40(sp)
-	sd      t6, 48(sp)
+    addi sp, sp, -56
+    sd t0, 0(sp)
+    sd t1, 8(sp)
+    sd t2, 16(sp)
+    sd t3, 24(sp)
+    sd t4, 32(sp)
+    sd t5, 40(sp)
+    sd t6, 48(sp)
 
-	li      t0, 8 
-	li      t1, 1024 
-	vsetvl	t0, t1, t0 
+    li t0, 4
+    blt a3, t0, col_end
 
-	li 		t0, 4
-	blt 	a3, t0, col_end
-	
-	srli	a3, a3, 2
-	
-	slli	a1, a1, 2
-	
-	mv 		t6, a0
-	
-	slli	t5, a1, 1
-	
-	add 	t4, a4, 1								// x10 -> t4
+    srli a3, a3, 2
 
-	// col loop
+    slli a1, a1, 2
+
+    mv t6, a0
+
+    slli t5, a1, 1
+
+    add t4, a4, 1
+
+    // col loop
 col_loop:
-	mv 		t3, t6
-	srli	t2, a4, 1
-	beqz	t2, channel_last
-	add 	t1, t3, a1						
-	// kernel size loop
+    mv t3, t6
+    srli t2, a4, 1
+    beqz t2, channel_last
+    add t1, t3, a1
+    // kernel size loop
 channel_loop2:
-	vle32.v 	v0,(t3)
-	vle32.v 	v1,(t1)
-	addi 	t2, t2, -1
-	add 	t3, t3, t5
-	add 	t1, t1, t5
-	vse32.v 	v0, (a2)
-	addi 	a2, a2, 16
-	vse32.v 	v1, (a2)
-	addi 	a2, a2, 16
-	bnez	t2, channel_loop2
+    lw t0, 0(t3)
+    lw t1, 0(t1)
+    addi t2, t2, -1
+    add t3, t3, t5
+    add t1, t1, t5
+    sw t0, 0(a2)
+    addi a2, a2, 4
+    sw t1, 0(a2)
+    addi a2, a2, 4
+    bnez t2, channel_loop2
 
 channel_last:
-	beqz 	t4, channel_loop_end
-	vle32.v 	v0,(t3)
-	vse32.v 	v0, (a2)
-	addi 	a2, a2, 16
+    beqz t4, channel_loop_end
+    lw t0, 0(t3)
+    sw t0, 0(a2)
+    addi a2, a2, 4
 
 channel_loop_end:
-	addi 	t6, t6, 16
-	addi 	a3, a3, -1
-	bnez	a3, col_loop
+    addi t6, t6, 4
+    addi a3, a3, -1
+    bnez a3, col_loop
 
 col_end:
-	ld      t0, 0(sp)
-	ld      t1, 8(sp)
-	ld      t2, 16(sp)
-	ld      t3, 24(sp)
-	ld      t4, 32(sp)
-	ld      t5, 40(sp)
-	ld      t6, 48(sp)
-	addi    sp, sp, 56
-	ret
-	.end
+    ld t0, 0(sp)
+    ld t1, 8(sp)
+    ld t2, 16(sp)
+    ld t3, 24(sp)
+    ld t4, 32(sp)
+    ld t5, 40(sp)
+    ld t6, 48(sp)
+    addi sp, sp, 56
+    ret
+    .end
